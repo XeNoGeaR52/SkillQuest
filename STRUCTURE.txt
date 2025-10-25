@@ -1,0 +1,51 @@
+SkillQuest Frontend Structure
+=============================
+
+app/
+├── web/                              [NEW] Web frontend module
+│   ├── __init__.py                   [NEW] Module init
+│   ├── auth.py                       [NEW] Login/Register/Logout routes
+│   ├── deps.py                       [NEW] Auth helpers & dependencies
+│   └── routes.py                     [NEW] Main page routes
+│
+├── templates/                        [NEW] Jinja2 HTML templates
+│   ├── base.html                     [NEW] Base layout with nav
+│   ├── dashboard.html                [NEW] User dashboard
+│   ├── progress.html                 [NEW] Progress & badges page
+│   ├── leaderboard.html              [NEW] Top players page
+│   ├── badges.html                   [NEW] Badges gallery
+│   ├── auth/
+│   │   ├── login.html                [NEW] Login form
+│   │   └── register.html             [NEW] Registration form
+│   └── challenges/
+│       ├── list.html                 [NEW] Challenges grid
+│       └── detail.html               [NEW] Challenge detail + submit
+│
+├── static/                           [NEW] Static assets
+│   ├── css/
+│   │   └── styles.css                [NEW] Custom styles
+│   ├── js/
+│   │   └── app.js                    [NEW] Utilities
+│   └── images/
+│       └── badges/                   [NEW] Badge icons directory
+│
+└── main.py                           [MODIFIED] Added web routes & static mount
+
+requirements.txt                      [MODIFIED] Added jinja2==3.1.6
+
+Documentation:
+├── FRONTEND_README.md                [NEW] Complete frontend docs
+├── QUICKSTART_FRONTEND.md            [NEW] Quick start guide
+├── IMPLEMENTATION_SUMMARY.md         [NEW] Implementation details
+└── STRUCTURE.txt                     [NEW] This file
+
+Summary:
+========
+- 4 Python modules (web/)
+- 9 HTML templates
+- 2 static files (CSS, JS)
+- 3 documentation files
+- 1 main.py update
+- 1 requirements.txt update
+
+Total: 20 new files created

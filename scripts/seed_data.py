@@ -12,6 +12,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from app.db.session import async_session_factory
 from app.db.models import User, Challenge, Badge, DifficultyEnum
 from app.core.security import get_password_hash
@@ -22,42 +23,61 @@ async def seed_database():
     async with async_session_factory() as session:
         print("Seeding database...")
 
-        # Create sample users
-        users = [
-            User(
-                username="alice",
-                email="alice@example.com",
-                password_hash=get_password_hash("password123"),
-                total_xp=0,
-                level=1
-            ),
-            User(
-                username="bob",
-                email="bob@example.com",
-                password_hash=get_password_hash("password123"),
-                total_xp=0,
-                level=1
-            ),
-            User(
-                username="charlie",
-                email="charlie@example.com",
-                password_hash=get_password_hash("password123"),
-                total_xp=0,
-                level=1
-            ),
-        ]
+        # Check if users already exist
+        result = await session.execute(select(User).where(User.username == "alice"))
+        existing_user = result.scalar_one_or_none()
 
-        for user in users:
-            session.add(user)
-        await session.commit()
-        print(f"Created {len(users)} users")
+        if existing_user:
+            print("Sample users already exist, skipping user creation...")
+            # Get existing users
+            result = await session.execute(
+                select(User).where(User.username.in_(["alice", "bob", "charlie"]))
+            )
+            users = list(result.scalars().all())
+        else:
+            # Create sample users
+            users = [
+                User(
+                    username="alice",
+                    email="alice@example.com",
+                    password_hash=get_password_hash("password123"),
+                    total_xp=0,
+                    level=1
+                ),
+                User(
+                    username="bob",
+                    email="bob@example.com",
+                    password_hash=get_password_hash("password123"),
+                    total_xp=0,
+                    level=1
+                ),
+                User(
+                    username="charlie",
+                    email="charlie@example.com",
+                    password_hash=get_password_hash("password123"),
+                    total_xp=0,
+                    level=1
+                ),
+            ]
 
-        # Refresh to get IDs
-        for user in users:
-            await session.refresh(user)
+            for user in users:
+                session.add(user)
+            await session.commit()
+            print(f"Created {len(users)} users")
 
-        # Create sample challenges
-        challenges = [
+            # Refresh to get IDs
+            for user in users:
+                await session.refresh(user)
+
+        # Check if challenges already exist
+        result = await session.execute(select(Challenge).where(Challenge.title == "Hello World"))
+        existing_challenge = result.scalar_one_or_none()
+
+        if existing_challenge:
+            print("Sample challenges already exist, skipping challenge creation...")
+        else:
+            # Create sample challenges
+            challenges = [
             Challenge(
                 title="Hello World",
                 description="Write a program that prints 'Hello, World!' to the console.",
@@ -121,15 +141,22 @@ async def seed_database():
                 created_by=users[0].id,
                 published=True
             ),
-        ]
+            ]
 
-        for challenge in challenges:
-            session.add(challenge)
-        await session.commit()
-        print(f"Created {len(challenges)} challenges")
+            for challenge in challenges:
+                session.add(challenge)
+            await session.commit()
+            print(f"Created {len(challenges)} challenges")
 
-        # Create sample badges
-        badges = [
+        # Check if badges already exist
+        result = await session.execute(select(Badge).where(Badge.name == "First Steps"))
+        existing_badge = result.scalar_one_or_none()
+
+        if existing_badge:
+            print("Sample badges already exist, skipping badge creation...")
+        else:
+            # Create sample badges
+            badges = [
             Badge(
                 name="First Steps",
                 description="Complete your first challenge",
@@ -166,14 +193,14 @@ async def seed_database():
                 condition={"type": "consecutive_days", "days": 7},
                 icon_url="https://example.com/badges/dedicated.png"
             ),
-        ]
+            ]
 
-        for badge in badges:
-            session.add(badge)
-        await session.commit()
-        print(f"Created {len(badges)} badges")
+            for badge in badges:
+                session.add(badge)
+            await session.commit()
+            print(f"Created {len(badges)} badges")
 
-        print("\nSeed data created successfully!")
+        print("\n✓ Seed data is ready!")
         print("\nSample user credentials:")
         print("  Username: alice | Password: password123")
         print("  Username: bob   | Password: password123")

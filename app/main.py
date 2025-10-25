@@ -1,7 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from app.core.config import settings
 from app.api.v1 import auth, challenges, attempts, badges, leaderboard
+from app.web import routes as web_routes
+from app.web import auth as web_auth
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -19,6 +22,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Mount static files
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
 
 @app.get("/health", tags=["Health"])
 async def health_check():
@@ -30,19 +36,13 @@ async def health_check():
     }
 
 
-@app.get("/", tags=["Root"])
-async def root():
-    """Root endpoint with API information."""
-    return {
-        "message": "Welcome to SkillQuest API",
-        "docs": "/docs",
-        "health": "/health"
-    }
+# Include API routers (with /api prefix to distinguish from web routes)
+app.include_router(auth.router, prefix="/api/auth", tags=["API Authentication"])
+app.include_router(challenges.router, prefix="/api/challenges", tags=["API Challenges"])
+app.include_router(attempts.router, prefix="/api/attempts", tags=["API Attempts"])
+app.include_router(badges.router, prefix="/api/badges", tags=["API Badges"])
+app.include_router(leaderboard.router, prefix="/api", tags=["API Leaderboard"])
 
-
-# Include routers
-app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
-app.include_router(challenges.router, prefix="/challenges", tags=["Challenges"])
-app.include_router(attempts.router, prefix="/attempts", tags=["Attempts"])
-app.include_router(badges.router, prefix="/badges", tags=["Badges"])
-app.include_router(leaderboard.router, tags=["Leaderboard"])
+# Include web frontend routers (no prefix - these serve HTML)
+app.include_router(web_auth.router, tags=["Web Authentication"])
+app.include_router(web_routes.router, tags=["Web Pages"])

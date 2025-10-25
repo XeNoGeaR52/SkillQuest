@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Account Settings - SkillQuest{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <h1 class="text-3xl font-bold">Account Settings</h1>
+
+    <!-- User Information -->
+    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <h2 class="text-2xl font-bold mb-6">Profile Information</h2>
+
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Username</label>
+                <div class="px-4 py-2 bg-gray-700 rounded-md text-white">{{ user.username }}</div>
+                <p class="text-xs text-gray-400 mt-1">Username cannot be changed</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                <div class="px-4 py-2 bg-gray-700 rounded-md text-white">{{ user.email }}</div>
+                <p class="text-xs text-gray-400 mt-1">Email cannot be changed</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Member Since</label>
+                <div class="px-4 py-2 bg-gray-700 rounded-md text-white">
+                    {{ user.created_at.strftime('%B %d, %Y') }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <h2 class="text-2xl font-bold mb-6">Your Stats</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-gray-700 rounded-lg p-4">
+                <div class="text-gray-400 text-sm">Total XP</div>
+                <div class="text-2xl font-bold text-indigo-400 mt-1">{{ user.total_xp }}</div>
+            </div>
+
+            <div class="bg-gray-700 rounded-lg p-4">
+                <div class="text-gray-400 text-sm">Current Level</div>
+                <div class="text-2xl font-bold text-purple-400 mt-1">{{ user.level }}</div>
+            </div>
+
+            <div class="bg-gray-700 rounded-lg p-4">
+                <div class="text-gray-400 text-sm">Badges Earned</div>
+                <div class="text-2xl font-bold text-yellow-400 mt-1">{{ badge_count }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password -->
+    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <h2 class="text-2xl font-bold mb-6">Change Password</h2>
+
+        <div id="password-response"></div>
+
+        <form hx-post="/account/change-password"
+              hx-target="#password-response"
+              hx-swap="innerHTML"
+              class="space-y-4 max-w-md">
+
+            <div>
+                <label for="current_password" class="block text-sm font-medium text-gray-300 mb-2">
+                    Current Password
+                </label>
+                <input type="password"
+                       id="current_password"
+                       name="current_password"
+                       required
+                       class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+
+            <div>
+                <label for="new_password" class="block text-sm font-medium text-gray-300 mb-2">
+                    New Password
+                </label>
+                <input type="password"
+                       id="new_password"
+                       name="new_password"
+                       required
+                       minlength="8"
+                       class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <p class="text-xs text-gray-400 mt-1">Minimum 8 characters</p>
+            </div>
+
+            <div>
+                <label for="confirm_password" class="block text-sm font-medium text-gray-300 mb-2">
+                    Confirm New Password
+                </label>
+                <input type="password"
+                       id="confirm_password"
+                       name="confirm_password"
+                       required
+                       class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+
+            <button type="submit"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-semibold">
+                Change Password
+            </button>
+        </form>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="bg-gray-800 rounded-lg p-6 border border-red-700">
+        <h2 class="text-2xl font-bold mb-4 text-red-400">Danger Zone</h2>
+        <p class="text-gray-400 mb-4">Once you delete your account, there is no going back. Please be certain.</p>
+
+        <div id="delete-response"></div>
+
+        <button onclick="if(confirm('Are you sure you want to delete your account? This action cannot be undone!')) { htmx.trigger(this, 'confirmed') }"
+                hx-post="/account/delete"
+                hx-trigger="confirmed"
+                hx-target="#delete-response"
+                hx-swap="innerHTML"
+                class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-semibold">
+            Delete Account
+        </button>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}My Progress - SkillQuest{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <h1 class="text-3xl font-bold">My Progress</h1>
+
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h3 class="text-gray-400 text-sm font-medium">Total XP</h3>
+            <p class="text-3xl font-bold text-indigo-400 mt-2">{{ user.total_xp }}</p>
+        </div>
+
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h3 class="text-gray-400 text-sm font-medium">Current Level</h3>
+            <p class="text-3xl font-bold text-purple-400 mt-2">{{ user.level }}</p>
+        </div>
+
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h3 class="text-gray-400 text-sm font-medium">Challenges Passed</h3>
+            <p class="text-3xl font-bold text-green-400 mt-2">{{ passed_count }}</p>
+        </div>
+
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h3 class="text-gray-400 text-sm font-medium">Total Attempts</h3>
+            <p class="text-3xl font-bold text-blue-400 mt-2">{{ total_attempts }}</p>
+        </div>
+    </div>
+
+    <!-- Badges Section -->
+    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <h2 class="text-2xl font-bold mb-6">Earned Badges ({{ earned_badges|length }})</h2>
+        {% if earned_badges %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for user_badge in earned_badges %}
+            <div class="bg-gray-700 rounded-lg p-4 flex items-center space-x-4">
+                <div class="text-4xl">🏆</div>
+                <div class="flex-1">
+                    <h3 class="font-semibold text-white">{{ user_badge.badge.name }}</h3>
+                    <p class="text-sm text-gray-400">{{ user_badge.badge.description }}</p>
+                    <p class="text-xs text-gray-500 mt-1">
+                        Earned: {{ user_badge.awarded_at.strftime('%Y-%m-%d') }}
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-400">No badges earned yet. Keep completing challenges!</p>
+        {% endif %}
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <h2 class="text-2xl font-bold mb-6">Recent Activity</h2>
+        {% if recent_attempts %}
+        <div class="space-y-3">
+            {% for attempt in recent_attempts %}
+            <div class="bg-gray-700 rounded-lg p-4">
+                <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-white">{{ attempt.challenge.title }}</h3>
+                        <div class="flex items-center gap-4 mt-2 text-sm">
+                            <span class="text-gray-400">
+                                {{ attempt.started_at.strftime('%Y-%m-%d %H:%M') }}
+                            </span>
+                            <span>
+                                {% if attempt.status == "passed" %}
+                                    <span class="text-green-400">✓ Passed</span>
+                                {% elif attempt.status == "failed" %}
+                                    <span class="text-red-400">✗ Failed</span>
+                                {% else %}
+                                    <span class="text-yellow-400">⏱ {{ attempt.status.title() }}</span>
+                                {% endif %}
+                            </span>
+                            {% if attempt.score is not none %}
+                            <span class="text-gray-400">Score: {{ attempt.score }}/100</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        {% if attempt.xp_awarded %}
+                        <span class="text-indigo-400 font-bold">+{{ attempt.xp_awarded }} XP</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-400">No attempts yet. <a href="/challenges" class="text-indigo-400 hover:text-indigo-300">Start a challenge!</a></p>
+        {% endif %}
+    </div>
+
+    <!-- Success Rate -->
+    {% if total_attempts > 0 %}
+    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <h2 class="text-2xl font-bold mb-4">Success Rate</h2>
+        <div class="flex items-center gap-4">
+            <div class="flex-1">
+                <div class="w-full bg-gray-700 rounded-full h-6">
+                    <div class="bg-green-500 h-6 rounded-full flex items-center justify-center text-white text-sm font-bold"
+                         style="width: {{ (passed_count / total_attempts * 100)|round }}%">
+                        {{ (passed_count / total_attempts * 100)|round }}%
+                    </div>
+                </div>
+            </div>
+            <span class="text-gray-400">{{ passed_count }} / {{ total_attempts }} passed</span>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

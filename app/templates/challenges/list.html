@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Challenges - SkillQuest{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-bold">Challenges</h1>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+        <div class="flex flex-wrap gap-4">
+            <span class="text-gray-400 self-center">Filter by difficulty:</span>
+            <a href="/challenges"
+               class="px-4 py-2 rounded-lg {% if not difficulty %}bg-indigo-600{% else %}bg-gray-700 hover:bg-gray-600{% endif %}">
+                All
+            </a>
+            <a href="/challenges?difficulty=easy"
+               class="px-4 py-2 rounded-lg {% if difficulty == 'easy' %}bg-green-600{% else %}bg-gray-700 hover:bg-gray-600{% endif %}">
+                Easy
+            </a>
+            <a href="/challenges?difficulty=medium"
+               class="px-4 py-2 rounded-lg {% if difficulty == 'medium' %}bg-yellow-600{% else %}bg-gray-700 hover:bg-gray-600{% endif %}">
+                Medium
+            </a>
+            <a href="/challenges?difficulty=hard"
+               class="px-4 py-2 rounded-lg {% if difficulty == 'hard' %}bg-red-600{% else %}bg-gray-700 hover:bg-gray-600{% endif %}">
+                Hard
+            </a>
+        </div>
+    </div>
+
+    <!-- Challenges Grid -->
+    {% if challenges %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for challenge in challenges %}
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-indigo-500 transition">
+            <div class="flex justify-between items-start mb-3">
+                <h3 class="text-xl font-bold text-white">{{ challenge.title }}</h3>
+                <span class="px-2 py-1 rounded text-xs font-semibold
+                    {% if challenge.difficulty == 'easy' %}bg-green-600
+                    {% elif challenge.difficulty == 'medium' %}bg-yellow-600
+                    {% else %}bg-red-600{% endif %}">
+                    {{ challenge.difficulty.upper() }}
+                </span>
+            </div>
+
+            <p class="text-gray-400 text-sm mb-4 line-clamp-3">
+                {{ challenge.description[:150] }}{% if challenge.description|length > 150 %}...{% endif %}
+            </p>
+
+            {% if challenge.tags %}
+            <div class="flex flex-wrap gap-2 mb-4">
+                {% for tag in challenge.tags[:3] %}
+                <span class="px-2 py-1 bg-gray-700 text-gray-300 text-xs rounded">{{ tag }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="flex justify-between items-center mt-4 pt-4 border-t border-gray-700">
+                <span class="text-indigo-400 font-bold">{{ challenge.xp }} XP</span>
+                <a href="/challenges/{{ challenge.id }}"
+                   class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">
+                    View Challenge
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if total_pages > 1 %}
+    <div class="flex justify-center gap-2 mt-8">
+        {% if page > 1 %}
+        <a href="/challenges?page={{ page - 1 }}{% if difficulty %}&difficulty={{ difficulty }}{% endif %}"
+           class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg">
+            Previous
+        </a>
+        {% endif %}
+
+        <span class="px-4 py-2 bg-gray-800 rounded-lg">
+            Page {{ page }} of {{ total_pages }}
+        </span>
+
+        {% if page < total_pages %}
+        <a href="/challenges?page={{ page + 1 }}{% if difficulty %}&difficulty={{ difficulty }}{% endif %}"
+           class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg">
+            Next
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="bg-gray-800 rounded-lg p-12 text-center border border-gray-700">
+        <p class="text-gray-400 text-lg">No challenges found.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

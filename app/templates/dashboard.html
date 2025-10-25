@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - SkillQuest{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+    <!-- Welcome Header -->
+    <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg p-8 shadow-xl">
+        <h1 class="text-3xl font-bold text-white">Welcome back, {{ user.username }}!</h1>
+        <p class="text-indigo-100 mt-2">Ready to level up your skills?</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- XP Card -->
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h3 class="text-gray-400 text-sm font-medium">Total XP</h3>
+            <p class="text-3xl font-bold text-indigo-400 mt-2">{{ user.total_xp }}</p>
+            <div class="mt-4">
+                <div class="flex justify-between text-sm text-gray-400 mb-1">
+                    <span>Level {{ user.level }}</span>
+                    <span>{{ next_level_xp }} XP</span>
+                </div>
+                <div class="w-full bg-gray-700 rounded-full h-2">
+                    <div class="bg-indigo-500 h-2 rounded-full" style="width: {{ xp_progress }}%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Level Card -->
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h3 class="text-gray-400 text-sm font-medium">Current Level</h3>
+            <p class="text-3xl font-bold text-purple-400 mt-2">{{ user.level }}</p>
+            <p class="text-gray-500 mt-2 text-sm">Keep earning XP to level up!</p>
+        </div>
+
+        <!-- Challenges Completed -->
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h3 class="text-gray-400 text-sm font-medium">Challenges Completed</h3>
+            <p class="text-3xl font-bold text-green-400 mt-2">{{ total_completed }}</p>
+            <a href="/challenges" class="text-indigo-400 hover:text-indigo-300 text-sm mt-2 inline-block">
+                Browse more challenges →
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Recent Attempts -->
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h2 class="text-xl font-bold mb-4">Recent Attempts</h2>
+            {% if recent_attempts %}
+            <div class="space-y-3">
+                {% for attempt in recent_attempts %}
+                <div class="bg-gray-700 rounded-lg p-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-semibold text-white">{{ attempt.challenge.title }}</h3>
+                            <p class="text-sm text-gray-400 mt-1">
+                                {% if attempt.status == "passed" %}
+                                    <span class="text-green-400">✓ Passed</span>
+                                {% elif attempt.status == "failed" %}
+                                    <span class="text-red-400">✗ Failed</span>
+                                {% else %}
+                                    <span class="text-yellow-400">⏱ {{ attempt.status.title() }}</span>
+                                {% endif %}
+                                • {{ attempt.score if attempt.score else 0 }}/100
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-indigo-400 font-bold">+{{ attempt.xp_awarded if attempt.xp_awarded else 0 }} XP</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-400">No attempts yet. <a href="/challenges" class="text-indigo-400 hover:text-indigo-300">Start a challenge!</a></p>
+            {% endif %}
+        </div>
+
+        <!-- Recent Badges -->
+        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h2 class="text-xl font-bold mb-4">Recent Badges</h2>
+            {% if recent_badges %}
+            <div class="space-y-3">
+                {% for user_badge in recent_badges %}
+                <div class="bg-gray-700 rounded-lg p-4 flex items-center space-x-4">
+                    <div class="text-4xl">🏆</div>
+                    <div>
+                        <h3 class="font-semibold text-white">{{ user_badge.badge.name }}</h3>
+                        <p class="text-sm text-gray-400">{{ user_badge.badge.description }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <a href="/badges" class="text-indigo-400 hover:text-indigo-300 text-sm mt-4 inline-block">
+                View all badges →
+            </a>
+            {% else %}
+            <p class="text-gray-400">No badges earned yet. Keep completing challenges!</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+        <h2 class="text-xl font-bold mb-4">Quick Actions</h2>
+        <div class="flex flex-wrap gap-4">
+            <a href="/challenges" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold">
+                Browse Challenges
+            </a>
+            <a href="/leaderboard" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold">
+                View Leaderboard
+            </a>
+            <a href="/progress" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold">
+                My Progress
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
