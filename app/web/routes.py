@@ -212,9 +212,15 @@ async def submit_attempt(
         from datetime import datetime
         attempt.submitted_at = datetime.utcnow()
 
+        # Fetch user from session to ensure it's tracked by SQLAlchemy
+        user_result = await session.execute(
+            select(User).where(User.id == user.id)
+        )
+        db_user = user_result.scalar_one()
+
         # Update user XP
-        user.total_xp += attempt.xp_awarded
-        user.level = int((user.total_xp / 100) ** 0.5) + 1
+        db_user.total_xp += attempt.xp_awarded
+        db_user.level = int((db_user.total_xp / 100) ** 0.5) + 1
 
         await session.commit()
 
