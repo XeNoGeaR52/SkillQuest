@@ -1,7 +1,9 @@
-from pydantic import BaseModel, Field
-from uuid import UUID
 from datetime import datetime
 from typing import List
+from uuid import UUID
+
+from pydantic import BaseModel, Field
+
 from app.db.models import DifficultyEnum
 
 

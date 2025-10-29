@@ -1,10 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+
+from app.api.v1 import attempts, auth, badges, challenges, leaderboard
 from app.core.config import settings
-from app.api.v1 import auth, challenges, attempts, badges, leaderboard
-from app.web import routes as web_routes
 from app.web import auth as web_auth
+from app.web import routes as web_routes
 
 app = FastAPI(
     title=settings.APP_NAME,

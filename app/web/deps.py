@@ -1,11 +1,12 @@
 """Dependencies for web routes."""
 from typing import Optional
+
 from fastapi import Cookie, HTTPException, Request
-from fastapi.responses import RedirectResponse
-from app.core.security import decode_token
-from app.db.session import async_session_factory
-from app.db.models import User
 from sqlalchemy import select
+
+from app.core.security import decode_token
+from app.db.models import User
+from app.db.session import async_session_factory
 
 
 async def get_current_user_from_cookie(

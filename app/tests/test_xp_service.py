@@ -1,12 +1,11 @@
 """
 Unit tests for XP service functions.
 """
-import pytest
 from app.services.xp_service import (
-    calculate_xp_awarded,
     calculate_level,
     calculate_next_level_xp,
-    is_passing_score
+    calculate_xp_awarded,
+    is_passing_score,
 )
 
 

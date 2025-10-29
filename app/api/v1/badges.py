@@ -1,14 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from sqlalchemy.orm import joinedload
 from typing import List
 from uuid import UUID
 
-from app.db.session import get_db
-from app.db.models import Badge, UserBadge, User
-from app.schemas.badge import BadgeCreate, BadgeResponse, UserBadgeResponse
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
+
 from app.core.deps import get_current_active_user
+from app.db.models import Badge, User, UserBadge
+from app.db.session import get_db
+from app.schemas.badge import BadgeCreate, BadgeResponse, UserBadgeResponse
 
 router = APIRouter()
 

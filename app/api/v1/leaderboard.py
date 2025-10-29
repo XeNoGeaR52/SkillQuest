@@ -1,14 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
-from typing import List
 from uuid import UUID
 
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.models import Attempt, AttemptStatusEnum, User, UserBadge
 from app.db.session import get_db
-from app.db.models import User, Attempt, UserBadge, AttemptStatusEnum
 from app.schemas.leaderboard import LeaderboardEntry, LeaderboardResponse, UserProgress
-from app.services.redis_service import get_leaderboard, get_user_rank
-from app.services.xp_service import calculate_level, calculate_next_level_xp
+from app.services.redis_service import get_leaderboard
+from app.services.xp_service import calculate_next_level_xp
 
 router = APIRouter()
 

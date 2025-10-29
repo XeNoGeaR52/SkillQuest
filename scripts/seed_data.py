@@ -11,11 +11,11 @@ from pathlib import Path
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from app.db.session import async_session_factory
-from app.db.models import User, Challenge, Badge, DifficultyEnum
+
 from app.core.security import get_password_hash
+from app.db.models import Badge, Challenge, DifficultyEnum, User
+from app.db.session import async_session_factory
 
 
 async def seed_database():

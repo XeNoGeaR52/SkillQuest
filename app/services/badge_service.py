@@ -1,9 +1,10 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from datetime import datetime
 from typing import List
-from datetime import datetime, timedelta
 
-from app.db.models import Badge, UserBadge, Attempt, User, AttemptStatusEnum
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.models import Attempt, AttemptStatusEnum, Badge, UserBadge
 
 
 async def evaluate_badge_conditions(

@@ -1,14 +1,13 @@
-from celery import Celery
-from sqlalchemy import create_engine, select
-from sqlalchemy.orm import sessionmaker
 from uuid import UUID
-import asyncio
+
+import redis
+from celery import Celery
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from app.core.config import settings
-from app.db.models import Attempt, Challenge, User, AttemptStatusEnum
-from app.services.xp_service import calculate_xp_awarded, is_passing_score, calculate_level
-from app.services.badge_service import evaluate_badge_conditions, award_badge
-import redis
+from app.db.models import Attempt, AttemptStatusEnum, Challenge, User
+from app.services.xp_service import calculate_level, calculate_xp_awarded, is_passing_score
 
 # Create Celery app
 celery_app = Celery(
@@ -101,8 +100,9 @@ def award_xp_and_badges(attempt_id: str):
 
 def evaluate_badge_conditions_sync(user_id, user_total_xp: int, db):
     """Synchronous version of badge evaluation for Celery."""
-    from app.db.models import Badge, UserBadge
     from sqlalchemy import func
+
+    from app.db.models import Badge, UserBadge
 
     # Get all badges
     all_badges = db.query(Badge).all()
@@ -153,8 +153,9 @@ def evaluate_badge_conditions_sync(user_id, user_total_xp: int, db):
 
 def award_badge_sync(user_id, badge, db):
     """Synchronous version of badge awarding for Celery."""
-    from app.db.models import UserBadge
     from datetime import datetime
+
+    from app.db.models import UserBadge
 
     user_badge = UserBadge(
         user_id=user_id,

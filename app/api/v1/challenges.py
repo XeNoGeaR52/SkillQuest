@@ -1,17 +1,18 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_
 from typing import List
 from uuid import UUID
 
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.deps import get_current_active_user
+from app.db.models import Challenge, DifficultyEnum, User
 from app.db.session import get_db
-from app.db.models import Challenge, User, DifficultyEnum
 from app.schemas.challenge import (
     ChallengeCreate,
-    ChallengeUpdate,
     ChallengeResponse,
+    ChallengeUpdate,
 )
-from app.core.deps import get_current_active_user
 
 router = APIRouter()
 
@@ -30,7 +31,7 @@ async def list_challenges(
     - **skip**: Number of records to skip (pagination)
     - **limit**: Maximum number of records to return (1-100)
     """
-    query = select(Challenge).where(Challenge.published == True)
+    query = select(Challenge).where(Challenge.published)
 
     if difficulty:
         query = query.where(Challenge.difficulty == difficulty)

@@ -1,15 +1,15 @@
 """Main web routes for SkillQuest frontend."""
 from typing import Optional
-from fastapi import APIRouter, Request, Depends, Form, HTTPException, Query
+from uuid import UUID
+
+from fastapi import APIRouter, Depends, Form, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import select, func, desc
+from sqlalchemy import desc, func, select
 from sqlalchemy.orm import selectinload
-from uuid import UUID
-import httpx
 
+from app.db.models import Attempt, Badge, Challenge, User, UserBadge
 from app.db.session import async_session_factory
-from app.db.models import User, Challenge, Attempt, Badge, UserBadge
 from app.web.deps import get_current_user_from_cookie, require_user
 
 router = APIRouter()
@@ -96,7 +96,7 @@ async def challenges_list(
 
     async with async_session_factory() as session:
         # Build query
-        query = select(Challenge).where(Challenge.published == True)
+        query = select(Challenge).where(Challenge.published)
 
         if difficulty:
             query = query.where(Challenge.difficulty == difficulty)
@@ -408,7 +408,7 @@ async def change_password(
         user = result.scalar_one()
 
         # Verify current password
-        from app.core.security import verify_password, get_password_hash
+        from app.core.security import get_password_hash, verify_password
         if not verify_password(current_password, user.password_hash):
             return HTMLResponse(
                 content='<div class="alert alert-danger mb-4">Current password is incorrect</div>',

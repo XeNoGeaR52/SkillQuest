@@ -1,12 +1,17 @@
 """Authentication routes for web frontend."""
-from fastapi import APIRouter, Request, Form, Response, Cookie
+from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
-from app.db.session import async_session_factory
+
+from app.core.security import (
+    create_access_token,
+    create_refresh_token,
+    get_password_hash,
+    verify_password,
+)
 from app.db.models import User
-from app.core.security import verify_password, get_password_hash, create_access_token, create_refresh_token
-from datetime import timedelta
+from app.db.session import async_session_factory
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")

@@ -1,7 +1,9 @@
-import redis.asyncio as aioredis
-from app.core.config import settings
 from typing import List, Tuple
 from uuid import UUID
+
+import redis.asyncio as aioredis
+
+from app.core.config import settings
 
 # Redis client instance
 redis_client = None
